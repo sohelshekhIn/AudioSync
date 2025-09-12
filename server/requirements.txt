@@ -1,0 +1,9 @@
+asyncio==3.4.3
+websockets==11.0.3
+numpy==1.24.3
+pydub==0.25.1
+threading==0.1.0
+socket==1.0.0
+json==2.0.9
+wave==0.0.1
+pyaudio==0.2.11
