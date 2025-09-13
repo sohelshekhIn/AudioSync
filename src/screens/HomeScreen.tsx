@@ -69,7 +69,7 @@ const HomeScreen: React.FC<Props> = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#2196F3" />
-      
+
       {/* Header */}
       <View style={styles.header}>
         <Icon name="speaker-group" size={48} color="#ffffff" />
@@ -88,7 +88,7 @@ const HomeScreen: React.FC<Props> = ({navigation}) => {
           />
           <Text style={styles.statusText}>{getConnectionStatusText()}</Text>
         </View>
-        
+
         {state.connectionState === 'connected' && (
           <View style={styles.deviceInfo}>
             <Text style={styles.deviceCount}>

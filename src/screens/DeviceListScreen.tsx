@@ -40,14 +40,14 @@ const DeviceListScreen: React.FC = () => {
   };
 
   const getLatencyColor = (latency: number) => {
-    if (latency < 0.05) return '#4CAF50'; // Green - Excellent
-    if (latency < 0.1) return '#FF9800';  // Orange - Good
+    if (latency < 0.05) {return '#4CAF50';} // Green - Excellent
+    if (latency < 0.1) {return '#FF9800';}  // Orange - Good
     return '#F44336'; // Red - Poor
   };
 
   const getLatencyText = (latency: number) => {
-    if (latency < 0.05) return 'Excellent';
-    if (latency < 0.1) return 'Good';
+    if (latency < 0.05) {return 'Excellent';}
+    if (latency < 0.1) {return 'Good';}
     return 'Poor';
   };
 

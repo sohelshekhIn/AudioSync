@@ -90,7 +90,7 @@ export class AudioBuffer {
 
     const chunks = Array.from(this.buffer.values());
     const timestamps = chunks.map(chunk => chunk.timestamp);
-    
+
     return {
       size: this.buffer.size,
       duration: this.getBufferedDuration(),
@@ -101,7 +101,7 @@ export class AudioBuffer {
 
   public getChunksInRange(startTime: number, endTime: number): AudioChunk[] {
     const chunks: AudioChunk[] = [];
-    
+
     for (const chunk of this.buffer.values()) {
       if (chunk.timestamp >= startTime && chunk.timestamp <= endTime) {
         chunks.push(chunk);
@@ -113,7 +113,7 @@ export class AudioBuffer {
 
   public removeChunksOlderThan(timestamp: number): number {
     let removedCount = 0;
-    
+
     for (const [chunkId, chunk] of this.buffer.entries()) {
       if (chunk.timestamp < timestamp) {
         this.buffer.delete(chunkId);
@@ -126,7 +126,7 @@ export class AudioBuffer {
 
   public setMaxBufferSize(size: number): void {
     this.maxBufferSize = Math.max(10, size); // Minimum of 10 chunks
-    
+
     if (this.buffer.size > this.maxBufferSize) {
       this.cleanup();
     }

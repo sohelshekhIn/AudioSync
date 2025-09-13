@@ -1,18 +1,18 @@
-import {Platform} from 'react-native';
-import Sound from 'react-native-sound';
-import {Device, AudioChunk, ConnectionState, ServerMessage} from '../types';
-import {AudioBuffer} from './AudioBuffer';
-import {SyncManager} from './SyncManager';
+import { Platform } from "react-native";
+import Sound from "react-native-sound";
+import { Device, AudioChunk, ConnectionState, ServerMessage } from "../types";
+import { AudioBuffer } from "./AudioBuffer";
+import { SyncManager } from "./SyncManager";
 
 export class AudioSyncService {
   private websocket: WebSocket | null = null;
-  private connectionState: ConnectionState = 'disconnected';
+  private connectionState: ConnectionState = "disconnected";
   private currentDevice: Device | null = null;
   private audioBuffer: AudioBuffer;
   private syncManager: SyncManager;
   private isStreaming = false;
   private volume = 1.0;
-  
+
   // Event callbacks
   private onConnectionStateChangeCallback?: (state: ConnectionState) => void;
   private onDeviceListUpdateCallback?: (devices: Device[]) => void;
@@ -21,16 +21,16 @@ export class AudioSyncService {
 
   constructor() {
     // Enable playback in silence mode for iOS
-    Sound.setCategory('Playback');
-    
+    Sound.setCategory("Playback");
+
     this.audioBuffer = new AudioBuffer();
     this.syncManager = new SyncManager();
-    
+
     this.currentDevice = {
-      id: '',
+      id: "",
       name: this.getDeviceName(),
       platform: Platform.OS,
-      capabilities: ['audio_playback', 'websocket'],
+      capabilities: ["audio_playback", "websocket"],
       latency: 0,
     };
   }
@@ -38,21 +38,26 @@ export class AudioSyncService {
   private getDeviceName(): string {
     const platform = Platform.OS;
     const version = Platform.Version;
-    return `${platform.charAt(0).toUpperCase() + platform.slice(1)} Device ${version}`;
+    return `${
+      platform.charAt(0).toUpperCase() + platform.slice(1)
+    } Device ${version}`;
   }
 
   public async connect(serverUrl: string): Promise<void> {
-    if (this.connectionState === 'connected' || this.connectionState === 'connecting') {
+    if (
+      this.connectionState === "connected" ||
+      this.connectionState === "connecting"
+    ) {
       return;
     }
 
-    this.setConnectionState('connecting');
+    this.setConnectionState("connecting");
 
     try {
       this.websocket = new WebSocket(serverUrl);
-      
+
       this.websocket.onopen = () => {
-        this.setConnectionState('connected');
+        this.setConnectionState("connected");
         this.sendDeviceInfo();
       };
 
@@ -61,18 +66,17 @@ export class AudioSyncService {
       };
 
       this.websocket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        this.setConnectionState('error');
+        console.error("WebSocket error:", error);
+        this.setConnectionState("error");
       };
 
       this.websocket.onclose = () => {
-        this.setConnectionState('disconnected');
+        this.setConnectionState("disconnected");
         this.cleanup();
       };
-
     } catch (error) {
-      console.error('Connection error:', error);
-      this.setConnectionState('error');
+      console.error("Connection error:", error);
+      this.setConnectionState("error");
       throw error;
     }
   }
@@ -82,7 +86,7 @@ export class AudioSyncService {
       this.websocket.close();
       this.websocket = null;
     }
-    this.setConnectionState('disconnected');
+    this.setConnectionState("disconnected");
     this.cleanup();
   }
 
@@ -92,15 +96,15 @@ export class AudioSyncService {
   }
 
   private sendDeviceInfo(): void {
-    if (!this.websocket || this.connectionState !== 'connected') {
+    if (!this.websocket || this.connectionState !== "connected") {
       return;
     }
 
     const deviceInfo = {
-      type: 'device_info',
+      type: "device_info",
       device_name: this.currentDevice?.name,
       platform: Platform.OS,
-      capabilities: ['audio_playback', 'websocket'],
+      capabilities: ["audio_playback", "websocket"],
       latency: this.currentDevice?.latency || 0,
     };
 
@@ -112,29 +116,29 @@ export class AudioSyncService {
       const message: ServerMessage = JSON.parse(data);
 
       switch (message.type) {
-        case 'connection':
+        case "connection":
           this.handleConnectionMessage(message);
           break;
-        case 'device_list':
+        case "device_list":
           this.handleDeviceListMessage(message);
           break;
-        case 'prepare_streaming':
+        case "prepare_streaming":
           this.handlePrepareStreaming(message);
           break;
-        case 'audio_chunk':
+        case "audio_chunk":
           this.handleAudioChunk(message);
           break;
-        case 'stop_streaming':
+        case "stop_streaming":
           this.handleStopStreaming();
           break;
-        case 'sync_response':
+        case "sync_response":
           this.handleSyncResponse(message);
           break;
         default:
-          console.warn('Unknown message type:', message.type);
+          console.warn("Unknown message type:", message.type);
       }
     } catch (error) {
-      console.error('Error parsing server message:', error);
+      console.error("Error parsing server message:", error);
     }
   }
 
@@ -142,7 +146,7 @@ export class AudioSyncService {
     if (this.currentDevice) {
       this.currentDevice.id = message.client_id;
     }
-    console.log('Connected to server:', message.message);
+    console.log("Connected to server:", message.message);
   }
 
   private handleDeviceListMessage(message: ServerMessage): void {
@@ -151,8 +155,8 @@ export class AudioSyncService {
   }
 
   private async handlePrepareStreaming(message: ServerMessage): Promise<void> {
-    console.log('Preparing for streaming:', message);
-    
+    console.log("Preparing for streaming:", message);
+
     this.audioBuffer.initialize({
       sample_rate: message.sample_rate || 44100,
       channels: message.channels || 2,
@@ -191,21 +195,21 @@ export class AudioSyncService {
   private handleSyncResponse(message: ServerMessage): void {
     const clientTimestamp = Date.now() / 1000;
     const latency = clientTimestamp - message.server_timestamp;
-    
+
     if (this.currentDevice) {
       this.currentDevice.latency = latency;
     }
-    
+
     this.onLatencyUpdateCallback?.(latency);
   }
 
-  private sendAudioAck(chunkId: number, timestamp: number): void {
-    if (!this.websocket || this.connectionState !== 'connected') {
+  private sendAudioAck(chunkId: number, _timestamp: number): void {
+    if (!this.websocket || this.connectionState !== "connected") {
       return;
     }
 
     const ack = {
-      type: 'audio_chunk_ack',
+      type: "audio_chunk_ack",
       chunk_id: chunkId,
       timestamp: Date.now() / 1000,
     };
@@ -218,32 +222,31 @@ export class AudioSyncService {
     // This is a simplified implementation - in reality you'd need
     // to convert the float32 data to the appropriate audio format
     // and use native audio APIs for low-latency playback
-    
+
     try {
       // For now, we'll use a placeholder implementation
       // In a real app, you'd use react-native-sound or native audio APIs
-      console.log(`Playing audio chunk ${chunk.chunk_id} at ${chunk.timestamp}`);
-      
+      console.log(
+        `Playing audio chunk ${chunk.chunk_id} at ${chunk.timestamp}`
+      );
       // Apply volume
-      const volumeAdjustedData = chunk.data.map(sample => sample * this.volume);
-      
+      // const _volumeAdjustedData = chunk.data.map(sample => sample * this.volume);
       // Here you would typically:
       // 1. Convert float32 data to PCM
       // 2. Write to audio buffer
       // 3. Schedule playback at precise timestamp
-      
     } catch (error) {
-      console.error('Error playing audio chunk:', error);
+      console.error("Error playing audio chunk:", error);
     }
   }
 
   public async startStreaming(audioFile?: string): Promise<void> {
-    if (!this.websocket || this.connectionState !== 'connected') {
-      throw new Error('Not connected to server');
+    if (!this.websocket || this.connectionState !== "connected") {
+      throw new Error("Not connected to server");
     }
 
     const message = {
-      type: 'start_streaming',
+      type: "start_streaming",
       audio_file: audioFile,
     };
 
@@ -251,12 +254,12 @@ export class AudioSyncService {
   }
 
   public async stopStreaming(): Promise<void> {
-    if (!this.websocket || this.connectionState !== 'connected') {
+    if (!this.websocket || this.connectionState !== "connected") {
       return;
     }
 
     const message = {
-      type: 'stop_streaming',
+      type: "stop_streaming",
     };
 
     this.websocket.send(JSON.stringify(message));
@@ -267,19 +270,21 @@ export class AudioSyncService {
   }
 
   public requestSync(): void {
-    if (!this.websocket || this.connectionState !== 'connected') {
+    if (!this.websocket || this.connectionState !== "connected") {
       return;
     }
 
     const message = {
-      type: 'sync_request',
+      type: "sync_request",
     };
 
     this.websocket.send(JSON.stringify(message));
   }
 
   // Event listener methods
-  public onConnectionStateChange(callback: (state: ConnectionState) => void): void {
+  public onConnectionStateChange(
+    callback: (state: ConnectionState) => void
+  ): void {
     this.onConnectionStateChangeCallback = callback;
   }
 
@@ -287,7 +292,9 @@ export class AudioSyncService {
     this.onDeviceListUpdateCallback = callback;
   }
 
-  public onStreamingStateChange(callback: (isStreaming: boolean) => void): void {
+  public onStreamingStateChange(
+    callback: (isStreaming: boolean) => void
+  ): void {
     this.onStreamingStateChangeCallback = callback;
   }
 

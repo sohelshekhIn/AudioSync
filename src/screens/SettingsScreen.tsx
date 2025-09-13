@@ -98,7 +98,7 @@ const SettingsScreen: React.FC = () => {
         {/* Connection Settings */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Connection</Text>
-          
+
           {renderInputItem(
             'Server URL',
             'WebSocket server address for AudioSync',
@@ -144,7 +144,7 @@ const SettingsScreen: React.FC = () => {
         {/* Audio Settings */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Audio</Text>
-          
+
           {renderSettingItem(
             'High Quality Audio',
             'Use higher bitrate for better audio quality (uses more bandwidth)',
@@ -175,7 +175,7 @@ const SettingsScreen: React.FC = () => {
         {/* Notifications */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Notifications</Text>
-          
+
           {renderSettingItem(
             'Enable Notifications',
             'Receive notifications about connection status and streaming',
@@ -187,7 +187,7 @@ const SettingsScreen: React.FC = () => {
         {/* Device Information */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Device Information</Text>
-          
+
           <View style={styles.deviceInfo}>
             <View style={styles.deviceInfoRow}>
               <Text style={styles.deviceInfoLabel}>Device Name:</Text>
@@ -236,7 +236,7 @@ const SettingsScreen: React.FC = () => {
         {/* About */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>About</Text>
-          
+
           <View style={styles.aboutInfo}>
             <Text style={styles.aboutTitle}>AudioSync</Text>
             <Text style={styles.aboutVersion}>Version 1.0.0</Text>
@@ -244,13 +244,13 @@ const SettingsScreen: React.FC = () => {
               Cross-platform audio synchronization app for multi-device audio streaming
               with low latency and dynamic connectivity.
             </Text>
-            
+
             <View style={styles.aboutLinks}>
               <TouchableOpacity style={styles.linkButton}>
                 <Icon name="help" size={20} color="#2196F3" />
                 <Text style={styles.linkText}>Help & Support</Text>
               </TouchableOpacity>
-              
+
               <TouchableOpacity style={styles.linkButton}>
                 <Icon name="info" size={20} color="#2196F3" />
                 <Text style={styles.linkText}>Privacy Policy</Text>

@@ -25,7 +25,7 @@ export class SyncManager {
 
   public async schedulePlayback(
     targetTimestamp: number,
-    callback: () => void,
+    callback: () => void
   ): Promise<void> {
     const timeUntilPlayback = this.getTimeUntilSync(targetTimestamp);
     const callbackId = Date.now() + Math.random();
@@ -53,14 +53,14 @@ export class SyncManager {
 
   public calculateLatency(
     serverTimestamp: number,
-    clientTimestamp: number,
+    clientTimestamp: number
   ): number {
     return Math.abs(clientTimestamp - serverTimestamp);
   }
 
   public adjustForLatency(
     targetTimestamp: number,
-    estimatedLatency: number,
+    estimatedLatency: number
   ): number {
     // Adjust playback time to account for network latency
     return targetTimestamp - estimatedLatency;
@@ -97,8 +97,8 @@ export class SyncManager {
     };
   }
 
-  public cancelScheduledCallback(timestamp: number): boolean {
-    for (const [id, callback] of this.scheduledCallbacks.entries()) {
+  public cancelScheduledCallback(_timestamp: number): boolean {
+    for (const [id, _callback] of this.scheduledCallbacks.entries()) {
       // This is a simplified approach - in a real implementation,
       // you'd need to track timestamps with callback IDs
       const timeoutId = this.timeoutIds.get(id);
@@ -117,13 +117,12 @@ export class SyncManager {
   }
 
   public clearOldCallbacks(olderThanSeconds: number): number {
-    const cutoffTime = Date.now() / 1000 - olderThanSeconds;
     let clearedCount = 0;
 
     // This is simplified - in a real implementation, you'd track timestamps
     for (const [id, timeoutId] of this.timeoutIds.entries()) {
       // Clear very old timeouts (this is a safety measure)
-      if (id < (Date.now() - olderThanSeconds * 1000)) {
+      if (id < Date.now() - olderThanSeconds * 1000) {
         clearTimeout(timeoutId);
         this.scheduledCallbacks.delete(id);
         this.timeoutIds.delete(id);
